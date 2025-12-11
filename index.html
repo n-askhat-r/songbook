@@ -2,11 +2,8 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Альбом</title>
+  <title>Г. Тамендаров - Гармун халык моңнары</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Библиотека для чтения ID3-тегов -->
-  <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.7/dist/jsmediatags.min.js"></script>
 
   <style>
     body {
@@ -14,9 +11,11 @@
       margin: 0;
       padding: 20px;
       background: #f5f5f5;
+      color: #222;
       display: flex;
       justify-content: center;
     }
+
     .album-container {
       max-width: 800px;
       width: 100%;
@@ -25,12 +24,36 @@
       padding: 20px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
-    .album-header { margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-    .album-author { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.1em; color: #777; }
-    .album-title { font-size: 1.6rem; margin: 5px 0 10px; font-weight: 600; }
-    .album-description { font-size: 0.9rem; color: #555; }
 
-    .album-body { display: flex; flex-wrap: wrap; gap: 20px; }
+    .album-header {
+      margin-bottom: 20px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .album-author {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #777;
+    }
+
+    .album-title {
+      font-size: 1.6rem;
+      margin: 5px 0 10px;
+      font-weight: 600;
+    }
+
+    .album-description {
+      font-size: 0.95rem;
+      color: #555;
+    }
+
+    .album-body {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
 
     .playlist {
       flex: 1 1 240px;
@@ -43,41 +66,80 @@
       max-height: 300px;
       overflow-y: auto;
     }
+
     .playlist li {
       padding: 10px 14px;
       border-bottom: 1px solid #eee;
       cursor: pointer;
       font-size: 0.95rem;
       display: flex;
-      gap: 8px;
       align-items: center;
+      gap: 8px;
     }
-    .playlist li:last-child { border-bottom: none; }
-    .track-number { width: 22px; text-align: right; color: #aaa; font-size: 0.85rem; flex-shrink: 0; }
-    .track-title { flex: 1; }
-    .playlist li:hover { background: #f0f4ff; }
-    .playlist li.active { background: #dfe8ff; font-weight: 600; }
+
+    .playlist li:last-child {
+      border-bottom: none;
+    }
+
+    .track-number {
+      width: 22px;
+      text-align: right;
+      color: #aaa;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .track-title {
+      flex: 1;
+    }
+
+    .playlist li:hover {
+      background: #f0f4ff;
+    }
+
+    .playlist li.active {
+      background: #dfe8ff;
+      font-weight: 600;
+    }
 
     .player-block {
       flex: 1 1 260px;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       gap: 10px;
     }
+
     .now-playing-label {
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       color: #999;
     }
-    .now-playing-title { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
-    .hint { font-size: 0.8rem; color: #999; }
 
-    audio { width: 100%; margin-top: 10px; }
+    .now-playing-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
 
     @media (max-width: 640px) {
-      .album-body { flex-direction: column; }
-      .album-container { padding: 15px; }
+      .album-container {
+        padding: 15px;
+      }
+      .album-body {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -85,25 +147,42 @@
 
 <div class="album-container">
   <header class="album-header">
-    <!-- Эти поля мы тоже можем заполнить из тегов первого трека -->
-    <div id="album-author" class="album-author">Автор альбома: <strong>—</strong></div>
-    <h1 id="album-title" class="album-title">Название альбома</h1>
+    <div class="album-author">Автор альбома: <strong>Имя Автора</strong></div>
+    <h1 class="album-title">Название альбома</h1>
     <p class="album-description">
-      Страница альбома. Названия песен и автор подтягиваются из тегов MP3-файлов.
+      Краткое описание альбома: когда создан, что за песни, настроение и т.п.
     </p>
   </header>
 
   <div class="album-body">
-    <!-- Плейлист будем заполнять через JS -->
-    <ul id="playlist" class="playlist"></ul>
+    <!-- СПИСОК ТРЕКОВ -->
+    <ul id="playlist" class="playlist">
+      <!--
+        ВАЖНО:
+        data-src должно совпадать с названием mp3 файла в репозитории
+      -->
+      <li data-src="song1.mp3">
+        <span class="track-number">1</span>
+        <span class="track-title">Песня номер один</span>
+      </li>
+      <li data-src="song2.mp3">
+        <span class="track-number">2</span>
+        <span class="track-title">Песня номер два</span>
+      </li>
+      <li data-src="song3.mp3">
+        <span class="track-number">3</span>
+        <span class="track-title">Песня номер три</span>
+      </li>
+      <!-- добавляй дальше по тому же принципу -->
+    </ul>
 
-    <!-- Плеер -->
+    <!-- БЛОК ПЛЕЕРА -->
     <div class="player-block">
       <div>
         <div class="now-playing-label">Сейчас играет</div>
         <div id="now-playing" class="now-playing-title">—</div>
         <div class="hint">
-          Если воспроизведение не началось автоматически, нажмите кнопку «Play».
+          Если воспроизведение не начинается автоматически, нажмите кнопку «Play».
         </div>
       </div>
 
@@ -115,118 +194,69 @@
 </div>
 
 <script>
-  // Список файлов MP3 в альбоме
-  const tracks = [
-    { src: '001 Ашкынам мин туган ягыма.mp3' },
-    { src: '002 Кокпар.mp3' },
-    { src: '003 Истамбул.mp3' }
-  ];
+  (function () {
+    const playlistItems = Array.from(document.querySelectorAll('#playlist li[data-src]'));
+    const audio = document.getElementById('audio-player');
+    const nowPlaying = document.getElementById('now-playing');
 
-  const playlistEl = document.getElementById('playlist');
-  const audio = document.getElementById('audio-player');
-  const nowPlayingEl = document.getElementById('now-playing');
-  const albumAuthorEl = document.getElementById('album-author');
-  const albumTitleEl = document.getElementById('album-title');
+    let currentIndex = 0;
 
-  let playlistItems = [];
-  let currentIndex = 0;
-
-  // Чтение тегов одного файла
-  function readTags(track, index) {
-    if (!window.jsmediatags) {
-      console.warn('jsmediatags не загружен');
-      return;
+    function setActive(index) {
+      playlistItems.forEach((item, i) => {
+        item.classList.toggle('active', i === index);
+      });
     }
 
-    jsmediatags.read(track.src, {
-      onSuccess: function(tag) {
-        const t = tag.tags || {};
-        const title = t.title || ('Трек ' + (index + 1));
-        const artist = t.artist || 'Неизвестный автор';
-        const album = t.album || 'Без названия';
+    function loadTrack(index, autoplay = false) {
+      if (index < 0 || index >= playlistItems.length) return;
 
-        // Сохраняем распарсенные данные в объекте трека
-        track.title = title;
-        track.artist = artist;
-        track.album = album;
+      currentIndex = index;
+      const item = playlistItems[index];
+      const src = item.dataset.src;
+      const title = item.querySelector('.track-title')
+        ? item.querySelector('.track-title').textContent.trim()
+        : item.textContent.trim();
 
-        // Если это первый трек — заполним автора и название альбома
-        if (index === 0) {
-          albumAuthorEl.innerHTML = 'Автор альбома: <strong>' + artist + '</strong>';
-          albumTitleEl.textContent = album;
+      audio.src = src;
+      nowPlaying.textContent = title;
+      setActive(index);
+
+      if (autoplay) {
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            // Автовоспроизведение заблокировано браузером — это нормально
+            console.log('Autoplay blocked by browser:', err);
+          });
         }
-
-        // Обновляем текст в плейлисте (если элемент уже создан)
-        const li = playlistItems[index];
-        if (li) {
-          li.querySelector('.track-title').textContent = title;
-        }
-      },
-      onError: function(error) {
-        console.log('Ошибка чтения тегов для', track.src, error);
       }
-    });
-  }
+    }
 
-  // Инициализация списка треков
-  function buildPlaylist() {
-    tracks.forEach((track, index) => {
-      const li = document.createElement('li');
-      li.dataset.index = index;
-      li.innerHTML = `
-        <span class="track-number">${index + 1}</span>
-        <span class="track-title">Загрузка...</span>
-      `;
-      li.addEventListener('click', () => {
+    // Клик по треку в списке
+    playlistItems.forEach((item, index) => {
+      item.addEventListener('click', () => {
         loadTrack(index, true);
       });
-      playlistEl.appendChild(li);
-      playlistItems[index] = li;
-
-      // Читаем ID3-теги для этого трека
-      readTags(track, index);
     });
-  }
 
-  function setActive(index) {
-    playlistItems.forEach((li, i) => {
-      li.classList.toggle('active', i === index);
-    });
-  }
-
-  function loadTrack(index, autoplay = false) {
-    if (index < 0 || index >= tracks.length) return;
-    currentIndex = index;
-
-    const track = tracks[index];
-    const title = track.title || ('Трек ' + (index + 1));
-    nowPlayingEl.textContent = title;
-
-    audio.src = track.src;
-    setActive(index);
-
-    if (autoplay) {
-      const playPromise = audio.play();
-      if (playPromise) {
-        playPromise.catch(err => {
-          console.log('Autoplay blocked:', err);
-        });
+    // По окончании трека — включаем следующий
+    audio.addEventListener('ended', () => {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < playlistItems.length) {
+        loadTrack(nextIndex, true);
+      } else {
+        // можно зациклить: loadTrack(0, true);
+        // пока просто останавливаемся в конце плейлиста
       }
-    }
-  }
+    });
 
-  // Переход на следующий трек после окончания
-  audio.addEventListener('ended', () => {
-    const nextIndex = (currentIndex + 1) % tracks.length; // зацикливаем
-    loadTrack(nextIndex, true);
-  });
-
-  document.addEventListener('DOMContentLoaded', () => {
-    buildPlaylist();
-    if (tracks.length > 0) {
-      loadTrack(0, true); // первый трек
-    }
-  });
+    // При загрузке страницы — ставим первый трек и пытаемся запустить
+    document.addEventListener('DOMContentLoaded', () => {
+      if (playlistItems.length > 0) {
+        loadTrack(0, true);
+      }
+    });
+  })();
 </script>
 
 </body>

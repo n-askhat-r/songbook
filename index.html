@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Г. Тамендаров - Гармун халык моңнары</title>
+  <title>Название альбома</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -25,10 +25,20 @@
       box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
 
+    /* ==== Шапка альбома + обложка ==== */
     .album-header {
       margin-bottom: 20px;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .album-info {
+      flex: 1 1 220px;
+      min-width: 0;
     }
 
     .album-author {
@@ -47,6 +57,19 @@
     .album-description {
       font-size: 0.95rem;
       color: #555;
+    }
+
+    .album-cover-wrap {
+      flex: 0 0 160px;
+      text-align: right;
+    }
+
+    .album-cover-img {
+      max-width: 160px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      object-fit: cover;
     }
 
     .album-body {
@@ -73,12 +96,18 @@
       cursor: pointer;
       font-size: 0.95rem;
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .playlist li:last-child {
       border-bottom: none;
+    }
+
+    .track-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .track-number {
@@ -91,6 +120,12 @@
 
     .track-title {
       flex: 1;
+    }
+
+    .track-artist {
+      font-size: 0.8rem;
+      color: #777;
+      padding-left: 30px; /* немного смещаем, чтобы было под названием */
     }
 
     .playlist li:hover {
@@ -108,6 +143,8 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 10px;
+      position: relative;
+      z-index: 10;
     }
 
     .now-playing-label {
@@ -120,7 +157,13 @@
     .now-playing-title {
       font-size: 1.05rem;
       font-weight: 600;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+    }
+
+    .now-playing-artist {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 6px;
     }
 
     .hint {
@@ -128,17 +171,65 @@
       color: #999;
     }
 
-    audio {
-      width: 100%;
+    #player-bar {
       margin-top: 10px;
     }
 
+    audio {
+      width: 100%;
+    }
+
+    /* ---- Мобильная версия: плеер прилеплен к низу экрана ---- */
     @media (max-width: 640px) {
+      body {
+        padding: 15px 15px 90px; /* отступ снизу, чтобы плеер не перекрывал контент */
+      }
+
       .album-container {
         padding: 15px;
       }
+
+      .album-header {
+        align-items: flex-start;
+      }
+
+      .album-cover-wrap {
+        flex-basis: 100%;
+        text-align: center;
+        order: -1; /* обложка выше текста на мобильном */
+        margin-bottom: 10px;
+      }
+
+      .album-cover-img {
+        max-width: 220px;
+      }
+
       .album-body {
         flex-direction: column;
+      }
+
+      #player-bar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        padding: 8px 12px;
+        background: #ffffff;
+        box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.15);
+        border-radius: 12px 12px 0 0;
+      }
+
+      .player-block {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .now-playing-label,
+      .now-playing-title,
+      .now-playing-artist,
+      .hint {
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -147,11 +238,22 @@
 
 <div class="album-container">
   <header class="album-header">
-    <div class="album-author">Автор альбома: <strong>Имя Автора</strong></div>
-    <h1 class="album-title">Название альбома</h1>
-    <p class="album-description">
-      Краткое описание альбома: когда создан, что за песни, настроение и т.п.
-    </p>
+    <div class="album-info">
+      <div class="album-author">Автор альбома: <strong>Имя Автора</strong></div>
+      <h1 class="album-title">Название альбома</h1>
+      <p class="album-description">
+        Краткое описание альбома: когда создан, что за песни, настроение и т.п.
+      </p>
+    </div>
+
+    <div class="album-cover-wrap">
+      <!-- ЗДЕСЬ ОБЛОЖКА АЛЬБОМА -->
+      <img src="album-cover.jpg" alt="Обложка альбома" class="album-cover-img">
+      <!--
+        Положи файл album-cover.jpg рядом с album.html
+        или поменяй src на своё имя файла, например: covers/my-album.png
+      -->
+    </div>
   </header>
 
   <div class="album-body">
@@ -159,36 +261,49 @@
     <ul id="playlist" class="playlist">
       <!--
         ВАЖНО:
-        data-src должно совпадать с названием mp3 файла в репозитории
+        data-src    — mp3-файл
+        data-artist — исполнитель
       -->
-      <li data-src="song1.mp3">
-        <span class="track-number">1</span>
-        <span class="track-title">Песня номер один</span>
+      <li data-src="song1.mp3" data-artist="Исполнитель 1">
+        <div class="track-row">
+          <span class="track-number">1</span>
+          <span class="track-title">Песня номер один</span>
+        </div>
+        <div class="track-artist">Исполнитель: Исполнитель 1</div>
       </li>
-      <li data-src="song2.mp3">
-        <span class="track-number">2</span>
-        <span class="track-title">Песня номер два</span>
+
+      <li data-src="song2.mp3" data-artist="Исполнитель 2">
+        <div class="track-row">
+          <span class="track-number">2</span>
+          <span class="track-title">Песня номер два</span>
+        </div>
+        <div class="track-artist">Исполнитель: Исполнитель 2</div>
       </li>
-      <li data-src="song3.mp3">
-        <span class="track-number">3</span>
-        <span class="track-title">Песня номер три</span>
+
+      <li data-src="song3.mp3" data-artist="Исполнитель 3">
+        <div class="track-row">
+          <span class="track-number">3</span>
+          <span class="track-title">Песня номер три</span>
+        </div>
+        <div class="track-artist">Исполнитель: Исполнитель 3</div>
       </li>
       <!-- добавляй дальше по тому же принципу -->
     </ul>
 
     <!-- БЛОК ПЛЕЕРА -->
     <div class="player-block">
-      <div>
+      <div id="player-bar">
         <div class="now-playing-label">Сейчас играет</div>
-        <div id="now-playing" class="now-playing-title">—</div>
+        <div id="now-playing-title" class="now-playing-title">—</div>
+        <div id="now-playing-artist" class="now-playing-artist"></div>
         <div class="hint">
           Если воспроизведение не начинается автоматически, нажмите кнопку «Play».
         </div>
-      </div>
 
-      <audio id="audio-player" controls>
-        Ваш браузер не поддерживает воспроизведение аудио.
-      </audio>
+        <audio id="audio-player" controls>
+          Ваш браузер не поддерживает воспроизведение аудио.
+        </audio>
+      </div>
     </div>
   </div>
 </div>
@@ -197,7 +312,8 @@
   (function () {
     const playlistItems = Array.from(document.querySelectorAll('#playlist li[data-src]'));
     const audio = document.getElementById('audio-player');
-    const nowPlaying = document.getElementById('now-playing');
+    const nowPlayingTitle = document.getElementById('now-playing-title');
+    const nowPlayingArtist = document.getElementById('now-playing-artist');
 
     let currentIndex = 0;
 
@@ -213,19 +329,20 @@
       currentIndex = index;
       const item = playlistItems[index];
       const src = item.dataset.src;
-      const title = item.querySelector('.track-title')
-        ? item.querySelector('.track-title').textContent.trim()
-        : item.textContent.trim();
+      const artist = item.dataset.artist || '';
+      const titleEl = item.querySelector('.track-title');
+      const title = titleEl ? titleEl.textContent.trim() : item.textContent.trim();
 
       audio.src = src;
-      nowPlaying.textContent = title;
+      nowPlayingTitle.textContent = title;
+      nowPlayingArtist.textContent = artist ? 'Исполнитель: ' + artist : '';
       setActive(index);
 
       if (autoplay) {
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(err => {
-            // Автовоспроизведение заблокировано браузером — это нормально
+            // Автовоспроизведение может быть заблокировано браузером — это нормально
             console.log('Autoplay blocked by browser:', err);
           });
         }
@@ -245,8 +362,8 @@
       if (nextIndex < playlistItems.length) {
         loadTrack(nextIndex, true);
       } else {
-        // можно зациклить: loadTrack(0, true);
-        // пока просто останавливаемся в конце плейлиста
+        // Можно зациклить плейлист:
+        // loadTrack(0, true);
       }
     });
 

@@ -216,3 +216,102 @@
         font-size: 0.75rem;
       }
     }
+/* ============================== */
+/*       ТЁМНАЯ ТЕМА (Dark)       */
+/* ============================== */
+@media (prefers-color-scheme: dark) {
+
+  /* Общий фон */
+  body {
+    background: #121212;
+    color: #ddd;
+  }
+
+  /* Карточка альбома */
+  .album-container {
+    background: #1e1e1e;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    border: 1px solid #333;
+  }
+
+  /* Заголовки */
+  .album-title {
+    color: #fff;
+  }
+
+  .album-author {
+    color: #bbb;
+  }
+
+  .album-description {
+    color: #ccc;
+  }
+
+  /* Обложка — без изменений, только тени */
+  .album-cover-img {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+  }
+
+  /* Плейлист */
+  .playlist {
+    background: #222;
+    border: 1px solid #333;
+  }
+
+  .playlist li {
+    border-bottom: 1px solid #333;
+    color: #ddd;
+  }
+
+  .playlist li:hover {
+    background: #2c2c2c;
+  }
+
+  .playlist li.active {
+    background: #3a3a3a;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .track-artist {
+    color: #aaa;
+  }
+
+  .track-number {
+    color: #888;
+  }
+
+  /* Блок плеера */
+  .player-block {
+    color: #ccc;
+  }
+
+  .now-playing-label {
+    color: #999;
+  }
+
+  .now-playing-title {
+    color: #fff;
+  }
+
+  .now-playing-artist {
+    color: #bbb;
+  }
+
+  .hint {
+    color: #777;
+  }
+
+  /* Нижняя зафиксированная панель на мобильных */
+  #player-bar {
+    background: #1c1c1c;
+    box-shadow: 0 -4px 14px rgba(0,0,0,0.7);
+    border-top: 1px solid #333;
+  }
+
+  /* Аудио-плеер */
+  audio {
+    filter: invert(1) hue-rotate(180deg);
+    /* Это делает стандартный браузерный плеер тёмным */
+  }
+}

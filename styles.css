@@ -163,6 +163,32 @@
     audio {
       width: 100%;
     }
+    .theme-switcher {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .theme-switcher select {
+      margin-left: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-size: 0.9rem;
+    }
+.dark-theme .theme-switcher select {
+  background: #1d1d1d;
+  color: #eee;
+  border-color: #444;
+}
+
+/* Принудительно светлая тема */
+.light-theme .theme-switcher select {
+  background: #fff;
+  color: #333;
+  border-color: #ccc;
+}
 
     /* ---- Мобильная версия: плеер закреплён внизу экрана ---- */
     @media (max-width: 640px) {
@@ -313,5 +339,14 @@
   audio {
     filter: invert(1) hue-rotate(180deg);
     /* Это делает стандартный браузерный плеер тёмным */
+  }
+  .theme-switcher {
+    color: #ccc;
+  }
+
+  .theme-switcher select {
+    background: #1d1d1d;
+    color: #eee;
+    border-color: #444;
   }
 }

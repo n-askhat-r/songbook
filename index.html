@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Название альбома</title>
+  <title>Альбом</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -125,7 +125,7 @@
     .track-artist {
       font-size: 0.8rem;
       color: #777;
-      padding-left: 30px; /* немного смещаем, чтобы было под названием */
+      padding-left: 30px;
     }
 
     .playlist li:hover {
@@ -179,10 +179,10 @@
       width: 100%;
     }
 
-    /* ---- Мобильная версия: плеер прилеплен к низу экрана ---- */
+    /* ---- Мобильная версия: плеер закреплён внизу экрана ---- */
     @media (max-width: 640px) {
       body {
-        padding: 15px 15px 90px; /* отступ снизу, чтобы плеер не перекрывал контент */
+        padding: 15px 15px 90px;
       }
 
       .album-container {
@@ -196,7 +196,7 @@
       .album-cover-wrap {
         flex-basis: 100%;
         text-align: center;
-        order: -1; /* обложка выше текста на мобильном */
+        order: -1;
         margin-bottom: 10px;
       }
 
@@ -239,55 +239,25 @@
 <div class="album-container">
   <header class="album-header">
     <div class="album-info">
-      <div class="album-author">Автор альбома: <strong>Имя Автора</strong></div>
-      <h1 class="album-title">Название альбома</h1>
-      <p class="album-description">
-        Краткое описание альбома: когда создан, что за песни, настроение и т.п.
+      <div class="album-author">
+        Автор альбома: <strong id="album-author">—</strong>
+      </div>
+      <h1 class="album-title" id="album-title">Альбом</h1>
+      <p class="album-description" id="album-description">
+        Загрузка данных альбома...
       </p>
     </div>
 
     <div class="album-cover-wrap">
-      <!-- ЗДЕСЬ ОБЛОЖКА АЛЬБОМА -->
-      <img src="album-cover.jpg" alt="Обложка альбома" class="album-cover-img">
-      <!--
-        Положи файл album-cover.jpg рядом с album.html
-        или поменяй src на своё имя файла, например: covers/my-album.png
-      -->
+      <!-- Обложка подставится из JSON -->
+      <img src="" alt="Обложка альбома" class="album-cover-img" id="album-cover" style="display:none;">
     </div>
   </header>
 
   <div class="album-body">
-    <!-- СПИСОК ТРЕКОВ -->
+    <!-- СПИСОК ТРЕКОВ — будет заполнен из JSON -->
     <ul id="playlist" class="playlist">
-      <!--
-        ВАЖНО:
-        data-src    — mp3-файл
-        data-artist — исполнитель
-      -->
-      <li data-src="song1.mp3" data-artist="Исполнитель 1">
-        <div class="track-row">
-          <span class="track-number">1</span>
-          <span class="track-title">Песня номер один</span>
-        </div>
-        <div class="track-artist">Исполнитель: Исполнитель 1</div>
-      </li>
-
-      <li data-src="song2.mp3" data-artist="Исполнитель 2">
-        <div class="track-row">
-          <span class="track-number">2</span>
-          <span class="track-title">Песня номер два</span>
-        </div>
-        <div class="track-artist">Исполнитель: Исполнитель 2</div>
-      </li>
-
-      <li data-src="song3.mp3" data-artist="Исполнитель 3">
-        <div class="track-row">
-          <span class="track-number">3</span>
-          <span class="track-title">Песня номер три</span>
-        </div>
-        <div class="track-artist">Исполнитель: Исполнитель 3</div>
-      </li>
-      <!-- добавляй дальше по тому же принципу -->
+      <!-- Треки подгружаются из album.json -->
     </ul>
 
     <!-- БЛОК ПЛЕЕРА -->
@@ -310,11 +280,17 @@
 
 <script>
   (function () {
-    const playlistItems = Array.from(document.querySelectorAll('#playlist li[data-src]'));
     const audio = document.getElementById('audio-player');
     const nowPlayingTitle = document.getElementById('now-playing-title');
     const nowPlayingArtist = document.getElementById('now-playing-artist');
+    const playlistEl = document.getElementById('playlist');
 
+    const albumTitleEl = document.getElementById('album-title');
+    const albumAuthorEl = document.getElementById('album-author');
+    const albumDescEl = document.getElementById('album-description');
+    const albumCoverEl = document.getElementById('album-cover');
+
+    let playlistItems = [];
     let currentIndex = 0;
 
     function setActive(index) {
@@ -342,19 +318,94 @@
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(err => {
-            // Автовоспроизведение может быть заблокировано браузером — это нормально
             console.log('Autoplay blocked by browser:', err);
           });
         }
       }
     }
 
-    // Клик по треку в списке
-    playlistItems.forEach((item, index) => {
-      item.addEventListener('click', () => {
-        loadTrack(index, true);
+    function attachItemHandlers() {
+      playlistItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+          loadTrack(index, true);
+        });
       });
-    });
+    }
+
+    function buildTrackItem(track, index) {
+      const li = document.createElement('li');
+      li.dataset.src = track.src;
+      if (track.artist) li.dataset.artist = track.artist;
+
+      li.innerHTML = `
+        <div class="track-row">
+          <span class="track-number">${index + 1}</span>
+          <span class="track-title">${track.title || ('Трек ' + (index + 1))}</span>
+        </div>
+        <div class="track-artist">
+          ${track.artist ? 'Исполнитель: ' + track.artist : ''}
+        </div>
+      `;
+      return li;
+    }
+
+    function applyAlbumMeta(album) {
+      if (album.title) {
+        albumTitleEl.textContent = album.title;
+        document.title = album.title;
+      }
+      if (album.author) {
+        albumAuthorEl.textContent = album.author;
+      }
+      if (album.description) {
+        albumDescEl.textContent = album.description;
+      } else {
+        albumDescEl.textContent = '';
+      }
+      if (album.cover) {
+        albumCoverEl.src = album.cover;
+        albumCoverEl.style.display = 'block';
+      } else {
+        albumCoverEl.style.display = 'none';
+      }
+    }
+
+    function loadAlbumJSON() {
+      fetch('album.json')
+        .then(resp => {
+          if (!resp.ok) {
+            throw new Error('HTTP ' + resp.status);
+          }
+          return resp.json();
+        })
+        .then(data => {
+          const album = data.album || {};
+          const tracks = Array.isArray(data.tracks) ? data.tracks : [];
+
+          // Метаданные альбома
+          applyAlbumMeta(album);
+
+          // Строим треки
+          playlistEl.innerHTML = '';
+          tracks.forEach((track, index) => {
+            if (!track.src) return;
+            playlistEl.appendChild(buildTrackItem(track, index));
+          });
+
+          playlistItems = Array.from(playlistEl.querySelectorAll('li[data-src]'));
+          attachItemHandlers();
+
+          if (playlistItems.length > 0) {
+            loadTrack(0, true);
+          } else {
+            nowPlayingTitle.textContent = 'Нет треков';
+          }
+        })
+        .catch(err => {
+          console.error('Не удалось загрузить album.json:', err);
+          albumDescEl.textContent = 'Ошибка загрузки данных альбома.';
+        });
+    }
 
     // По окончании трека — включаем следующий
     audio.addEventListener('ended', () => {
@@ -362,16 +413,14 @@
       if (nextIndex < playlistItems.length) {
         loadTrack(nextIndex, true);
       } else {
-        // Можно зациклить плейлист:
+        // Можно зациклить:
         // loadTrack(0, true);
       }
     });
 
-    // При загрузке страницы — ставим первый трек и пытаемся запустить
+    // При загрузке страницы — подгружаем album.json
     document.addEventListener('DOMContentLoaded', () => {
-      if (playlistItems.length > 0) {
-        loadTrack(0, true);
-      }
+      loadAlbumJSON();
     });
   })();
 </script>

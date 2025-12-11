@@ -19,6 +19,15 @@
       <p class="album-description" id="album-description">
         Загрузка данных альбома...
       </p>
+      <!-- КНОПКА ПЕРЕКЛЮЧЕНИЯ ТЕМЫ -->
+      <div class="theme-switcher">
+        Тема:
+        <select id="theme-select">
+          <option value="auto">Авто</option>
+          <option value="light">Светлая</option>
+          <option value="dark">Тёмная</option>
+        </select>
+      </div>
     </div>
 
     <div class="album-cover-wrap">
@@ -272,6 +281,48 @@
 
     document.addEventListener('DOMContentLoaded', loadAlbum);
   })();
+      /* ============================
+       ПЕРЕКЛЮЧЕНИЕ ТЕМЫ ВРУЧНУЮ
+       ============================ */
+
+    const themeSelect = document.getElementById('theme-select');
+
+    const THEME_KEY = 'album_theme_' + location.pathname;
+
+    function applyTheme(theme) {
+      document.body.classList.remove('light-theme', 'dark-theme');
+
+      if (theme === 'light') {
+        document.body.classList.add('light-theme');
+      } else if (theme === 'dark') {
+        document.body.classList.add('dark-theme');
+      }
+      // "auto" — ничего не делаем, работает системная тема
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem(THEME_KEY);
+      if (!saved) return 'auto';
+      return saved;
+    }
+
+    function saveTheme(theme) {
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    // Установка темы при загрузке страницы
+    document.addEventListener('DOMContentLoaded', () => {
+      const theme = loadTheme();
+      themeSelect.value = theme;
+      applyTheme(theme);
+    });
+
+    // Переключение из меню
+    themeSelect.addEventListener('change', () => {
+      const theme = themeSelect.value;
+      saveTheme(theme);
+      applyTheme(theme);
+    });
 </script>
 
 </body>

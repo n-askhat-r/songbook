@@ -177,20 +177,8 @@
       background: #fff;
       font-size: 0.9rem;
     }
-.dark-theme .theme-switcher select {
-  background: #1d1d1d;
-  color: #eee;
-  border-color: #444;
-}
 
-/* Принудительно светлая тема */
-.light-theme .theme-switcher select {
-  background: #fff;
-  color: #333;
-  border-color: #ccc;
-}
-
-    /* ---- Мобильная версия: плеер закреплён внизу экрана ---- */
+/* ---- Мобильная версия: плеер закреплён внизу экрана ---- */
     @media (max-width: 640px) {
       body {
         padding: 15px 15px 145px;
@@ -349,4 +337,17 @@
     color: #eee;
     border-color: #444;
   }
+}
+/* Принудительно тёмная тема */
+.dark-theme .theme-switcher select {
+  background: #1d1d1d;
+  color: #eee;
+  border-color: #444;
+}
+
+/* Принудительно светлая тема */
+.light-theme .theme-switcher select {
+  background: #fff;
+  color: #333;
+  border-color: #ccc;
 }
